@@ -148,8 +148,6 @@ export default {
       book.queryByLevel(this.classification)
         .then(reps=>{
           this.options2= reps.data.classification
-          console.log(reps.data.classification)
-          console.log(this.options2.length)
         })
     },
     getValue(){
