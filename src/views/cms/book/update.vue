@@ -77,6 +77,17 @@
         <el-input v-model="book.info" :rows="10" type="textarea"/>
       </el-form-item>
       <!-- TODO 书封 -->
+      <el-form-item label="书封">
+      <el-upload
+        class="avatar-uploader"
+        :action="BASE_API+'/oss/uploadFile'"
+        :show-file-list="false"
+        :on-success="handleAvatarSuccess"
+        :before-upload="beforeAvatarUpload">
+        <img v-if="book.imageUrl" :src="book.imageUrl" class="avatar">
+        <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+      </el-upload>
+      </el-form-item>
       <el-form-item>
         <el-button :disabled="saveBtnDisabled" type="primary" @click="saveBook()">保存</el-button>
       </el-form-item>
@@ -105,6 +116,7 @@ export default {
   created() {
     this.init()
     this.select(1)
+
   },
   methods: {
     saveBook(){
@@ -125,9 +137,11 @@ export default {
           this.book=reps.data.book
           this.book.classification1=reps.data.book.classification1
           this.book.classification2=reps.data.book.classification2
-          // 页面加载时的下拉框显示 数据
-          this.value1=reps.data.book.classification1.name
-          this.value2=reps.data.book.classification2.name
+
+
+          this.value1=this.book.classification1.code
+          this.select2(this.value2)
+          this.value2=this.book.classification2.code
         })
       }
     },
@@ -153,9 +167,49 @@ export default {
     getValue(){
       this.book.classification1.code=this.value1
       this.value2=''
-    }
+    },
+    handleAvatarSuccess(res, file) {
+      this.book.imageUrl = res.data.url;
+    },
+    beforeAvatarUpload(file) {
+      const isJPG = file.type === 'image/jpeg';
+      const isLt2M = file.size / 1024 / 1024 < 2;
 
+      if (!isJPG) {
+        this.$message.error('上传头像图片只能是 JPG 格式!');
+      }
+      if (!isLt2M) {
+        this.$message.error('上传头像图片大小不能超过 2MB!');
+      }
+      return isJPG && isLt2M;
+    }
   }
 
 }
 </script>
+
+<style>
+.avatar-uploader .el-upload {
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.avatar-uploader .el-upload:hover {
+  border-color: #409EFF;
+}
+.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 178px;
+  height: 178px;
+  line-height: 178px;
+  text-align: center;
+}
+.avatar {
+  width: 178px;
+  height: 178px;
+  display: block;
+}
+</style>
