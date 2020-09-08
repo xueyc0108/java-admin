@@ -85,23 +85,39 @@ export const constantRoutes = [
     ]
   },
   {
-    path: '/example',
+    path: '/introduction',
     component: Layout,
-    redirect: '/example/table',
-    name: 'Example',
-    meta: { title: 'Example', icon: 'example' },
+    redirect: '/introduction',
+    name: 'introduction',
+    meta: { title: '版权引进', icon: 'example' },
+    alwaysShow: true,
     children: [
       {
-        path: 'table',
-        name: 'Table',
-        component: () => import('@/views/table/index'),
-        meta: { title: 'Table', icon: 'table' }
+        path: '/owner/list',
+        name: 'OwnerList',
+        component: () => import('@/views/introduction/owner/list'),
+        meta: { title: '版权方管理', icon: 'table' }
       },
       {
-        path: 'tree',
-        name: 'Tree',
-        component: () => import('@/views/tree/index'),
-        meta: { title: 'Tree', icon: 'tree' }
+        path: '/owner/update/:id',
+        name: 'OwnerUpdate',
+        component: () => import('@/views/introduction/owner/update'),
+        meta: { title: '版权方修改', icon: 'tree' },
+        hidden: true
+      },
+      {
+        path: '/owner/create',
+        name: 'OwnerCreate',
+        component: () => import('@/views/introduction/owner/create'),
+        meta: { title: '版权方添加', icon: 'tree' },
+        hidden: true
+      },
+      {
+        path: '/owner/customer/:id',
+        name: 'Customer',
+        component: () => import('@/views/introduction/owner/customer'),
+        meta: { title: '版权方客户管理', icon: 'tree' },
+        hidden: true
       }
     ]
   },
