@@ -27,6 +27,9 @@
 <!--      </el-form-item>-->
       <el-form-item>
         <el-button :disabled="saveBtnDisabled" type="primary" @click="saveOwner()">保存</el-button>
+        <router-link :to="'/owner/list'">
+          <el-button type="primary">取消</el-button>
+        </router-link>
       </el-form-item>
     </el-form>
 
