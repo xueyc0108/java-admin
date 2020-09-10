@@ -16,15 +16,15 @@
           <el-input v-model="owner.noteName"/>
         </el-col>
       </el-form-item>
-      <el-form-item label="合作状态">
-        <el-select v-model="owner.cooperationStatus" clearable placeholder="请选择">
-          <el-option :value="1" label="生效"/>
-          <el-option :value="0" label="失效"/>
-        </el-select>
-      </el-form-item>
-      <el-form-item label="版权简介">
-        <el-input v-model="owner.info" :rows="10" type="textarea"/>
-      </el-form-item>
+<!--      <el-form-item label="合作状态">-->
+<!--        <el-select v-model="owner.cooperationStatus" clearable placeholder="请选择">-->
+<!--          <el-option :value="1" label="生效"/>-->
+<!--          <el-option :value="0" label="失效"/>-->
+<!--        </el-select>-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="版权简介">-->
+<!--        <el-input v-model="owner.info" :rows="10" type="textarea"/>-->
+<!--      </el-form-item>-->
       <el-form-item>
         <el-button :disabled="saveBtnDisabled" type="primary" @click="saveOwner()">保存</el-button>
       </el-form-item>
