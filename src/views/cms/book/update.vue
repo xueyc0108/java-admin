@@ -13,25 +13,25 @@
       </el-form-item>
       <!-- TODO 分类 -->
       <template>
-        <el-form-item label="一级分类" >
-          <el-select  v-model="value1" placeholder="请选择" @change="getValue()">
+        <el-form-item label="一级分类">
+          <el-select v-model="book.firstSort" @change="getSecondCategoryList" placeholder="请选择" >
             <el-option
-              v-for="(item,index) in options1"
-              :key="item.index"
-              :label="item.name"
-              :value="item.code">
+              v-for="item in firstCategoryList"
+              :key="item.id"
+              :label="item.title"
+              :value="item.id">
             </el-option>
           </el-select>
         </el-form-item>
       </template>
       <template>
         <el-form-item label="二级分类">
-          <el-select v-model="value2" placeholder="请选择" @focus="select2(book.classification1.code)">
+          <el-select v-model="book.secondSort" placeholder="请选择">
             <el-option
-              v-for="(item,index) in options2"
-              :key="item.index"
-              :label="item.name"
-              :value="item.code">
+              v-for="item in secondCategoryList"
+              :key="item.id"
+              :label="item.title"
+              :value="item.id">
             </el-option>
           </el-select>
         </el-form-item>
@@ -97,31 +97,32 @@
 
 <script>
 import book from '@/api/cms/book'
+import category from '@/api/cms/category'
 export default {
   data() {
     return {
       book: {
-        classification1:{},
-        classification2:{}
+        imageUrl:'',
+        firstSort:'',
+        secondSort:''
       },
       saveBtnDisabled: false, // ##不禁用保存按钮
       BASE_API: process.env.VUE_APP_BASE_API,
-      classification:{},
-      options1: [],
-      options2: [],
-      value1:'',
-      value2:''
+      firstCategoryList: [], // ## 一级分类列表
+      secondCategoryList: [],// ## 二级分类列表
+      url:''
     }
   },
   created() {
     this.init()
-    this.select(1)
-
   },
   methods: {
     saveBook(){
       this.saveBtnDisabled=true
-      this.book.classification2.code=this.value2
+      // if (this.url!=book.imageUrl && this.url!='') { //当页面初始化时的图片路径和提交时的图片路径不一致时
+      //   book.deleteFile(this.url)  //删除被替换的图片
+      // }
+      console.log("book:"+this.book.imageUrl)
       book.updateBook(this.book)
         .then(reps=>
             this.$message({
@@ -134,40 +135,32 @@ export default {
     init(){
       if (this.$route.params && this.$route.params.id){
         book.getBookById(this.$route.params.id).then(reps=> {
+          // this.url=reps.data.book.imageUrl  //得到图片路径  以便判断是否更换图片
           this.book=reps.data.book
-          this.book.classification1=reps.data.book.classification1
-          this.book.classification2=reps.data.book.classification2
-
-
-          this.value1=this.book.classification1.code
-          this.select2(this.value2)
-          this.value2=this.book.classification2.code
+          category.getCategoryList()
+            .then(response => {
+              this.firstCategoryList = response.data.items
+              for (let i = 0; i < this.firstCategoryList.length; i++) {
+                // ## 当前选择的一级分类ID等于数据集合一级分类ID
+                if (this.firstCategoryList[i].id == this.book.firstSort ) {
+                  this.secondCategoryList = this.firstCategoryList[i].secondCategoryList
+                  // this.book.firstSort+=''
+                  // this.book.secondSort+=''
+                }
+              }
+            })
         })
       }
     },
-    select(level){
-      if (level==1){
-        this.classification.level=level
+    getSecondCategoryList(value){
+      this.book.secondSort = ''
+      for (let i = 0; i < this.firstCategoryList.length; i++) {
+        if (value === this.firstCategoryList[i].id){
+          this.secondCategoryList=this.firstCategoryList[i].secondCategoryList
+        }
       }
-      book.queryByLevel(this.classification)
-        .then(reps=>{
-          this.options1= reps.data.classification
-        })
     }
     ,
-    select2(code){
-      this.classification.level=2
-      this.options2=[]
-      this.classification.code=code
-      book.queryByLevel(this.classification)
-        .then(reps=>{
-          this.options2= reps.data.classification
-        })
-    },
-    getValue(){
-      this.book.classification1.code=this.value1
-      this.value2=''
-    },
     handleAvatarSuccess(res, file) {
       this.book.imageUrl = res.data.url;
     },

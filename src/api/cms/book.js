@@ -49,6 +49,13 @@ export default {
       method:'post',
       data:classification
     })
+  },
+  deleteFile(url){
+    return request({
+      url:`${api_name}/deleteFile`,
+      method:'delete',
+      data:url
+    })
   }
 
 }

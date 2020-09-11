@@ -64,8 +64,8 @@
       <el-table-column prop="id" label="书籍ID" width="80" />
       <el-table-column prop="title" label="书名"/>
       <el-table-column prop="author" label="作者" />
-      <el-table-column prop="classification1.name" label="一级分类" />
-      <el-table-column prop="classification2.name" label="二级分类" />
+      <el-table-column prop="firstSort" label="一级分类" :formatter="formatFirst" />
+      <el-table-column prop="secondSort" label="二级分类" :formatter="formatSecond" />
       <el-table-column label="连载">
         <template slot-scope="scope">
           {{ scope.row.serialize === 1 ? '是' : '否'}}
@@ -121,6 +121,7 @@
 <script>
 
 import book from '@/api/cms/book'
+import category from '@/api/cms/category'
 
 export default {
 
@@ -135,11 +136,14 @@ export default {
       currentTime: '' ,// ## 当前时间
       BASE_API: process.env.VUE_APP_BASE_API, // ## 接口API地址
       excelDialogVisible: false, // ## 导入Excel窗口, false为关闭
-      importBtnDisabled: false // ## 按钮是否禁用,false为不禁用
+      importBtnDisabled: false ,// ## 按钮是否禁用,false为不禁用
+      firstCategoryList: [], // ## 一级分类列表
+      secondCategoryList: [] // ## 二级分类列表
     }
   },
   created() {
       this.getPageBookList(this.pageNo)
+      this.getCategoryList()
   }
   ,
   methods: {
@@ -230,6 +234,29 @@ export default {
         type: 'error',
         message: '导入失败'
       })
+    },getCategoryList() { // ## 获取树形分类数据
+      category.getCategoryList()
+        .then(response => {
+          this.firstCategoryList = response.data.items
+        })
+    },
+    formatFirst(row, column) {
+      for (let i = 0; i < this.firstCategoryList.length; i++) {
+        if (row.firstSort == this.firstCategoryList[i].id) {
+          return this.firstCategoryList[i].title
+        }
+      }
+    },
+    formatSecond(row) {
+      for (let i = 0; i < this.firstCategoryList.length; i++) {
+        if (row.firstSort == this.firstCategoryList[i].id) {
+          for (let j = 0; j < this.firstCategoryList[i].secondCategoryList.length; j++) {
+            if (row.secondSort == this.firstCategoryList[i].secondCategoryList[j].id) {
+              return this.firstCategoryList[i].secondCategoryList[j].title
+            }
+          }
+        }
+      }
     }
   }
 }

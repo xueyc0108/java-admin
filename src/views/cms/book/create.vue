@@ -13,29 +13,29 @@
       </el-form-item>
       <!-- TODO 分类 -->
       <template>
-        <el-form-item label="一级分类" >
-        <el-select  v-model="value1" placeholder="请选择" @change="select1()">
-          <el-option
-
-            v-for="(item,index) in options1"
-            :key="item.index"
-            :label="item.name"
-            :value="item.code">
-          </el-option>
-        </el-select>
+        <el-form-item label="一级分类">
+          <el-select v-model="book.firstSort" @change="getSecondCategoryList" placeholder="请选择" >
+            <el-option
+              v-for="item in firstCategoryList"
+              :key="item.id"
+              :label="item.title"
+              :value="item.id">
+            </el-option>
+          </el-select>
         </el-form-item>
       </template>
       <template>
         <el-form-item label="二级分类">
-          <el-select v-model="value2" placeholder="请选择" >
+          <el-select v-model="book.secondSort" placeholder="请选择">
             <el-option
-              v-for="item in options2"
-              :key="item.value"
-              :label="item.name"
-              :value="item.code">
+              v-for="item in secondCategoryList"
+              :key="item.id"
+              :label="item.title"
+              :value="item.id">
             </el-option>
           </el-select>
         </el-form-item>
+
       </template>
       <!-- TODO 版权 -->
       <el-form-item label="授权开始时间">
@@ -98,32 +98,28 @@
 
 <script>
 import book from '@/api/cms/book'
+import category from '@/api/cms/category'
 export default {
   data() {
     return {
       book: {
-        classification1:{},
-        classification2:{},
-        imageUrl:''
+        imageUrl:'',
+        firstSort:'',
+        secondSort:''
       },
       saveBtnDisabled: false, // ##不禁用保存按钮
       BASE_API: process.env.VUE_APP_BASE_API,
-      classification:{},
-      options1: [],
-      options2: [],
-      value1:'',
-      value2:''
+      firstCategoryList: [], // ## 一级分类列表
+      secondCategoryList: [],// ## 二级分类列表
 
     }
 
   },
   created() {
-    this.select(1)
+    this.getCategoryList()
   },
   methods: {
     saveBook(){
-      this.book.classification1.code=this.value1
-      this.book.classification2.code=this.value2
       this.saveBtnDisabled=true
       book.saveBook(this.book)
         .then(reps=>
@@ -135,30 +131,19 @@ export default {
             this.$router.push('/cms/book/list')
         )
     },
-    select(level){
-      if (level==1){
-        this.classification.level=level
-      }
-      book.queryByLevel(this.classification)
-      .then(reps=>{
-       this.options1= reps.data.classification
-        // this.options2.splice(this.options2.length)
-        // this.select1()
-      })
-
-
-    },
-    select1(){
-      // console.log(this.value1)
-      this.classification.level=2
-      // this.classification={}
-      this.options2=[]
-      this.classification.code=this.value1
-      book.queryByLevel(this.classification)
-        .then(reps=>{
-          this.options2= reps.data.classification
-
+    getCategoryList() { // ## 获取树形分类数据
+      category.getCategoryList()
+        .then(response => {
+          this.firstCategoryList = response.data.items
         })
+    },
+    getSecondCategoryList(value){
+      this.book.secondSort = ''
+      for (let i = 0; i < this.firstCategoryList.length; i++) {
+          if (value === this.firstCategoryList[i].id){
+            this.secondCategoryList=this.firstCategoryList[i].secondCategoryList
+          }
+      }
     },
     handleAvatarSuccess(res, file) {
       this.book.imageUrl = res.data.url;

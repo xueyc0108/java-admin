@@ -118,6 +118,20 @@ export const constantRoutes = [
         component: () => import('@/views/introduction/owner/customer'),
         meta: { title: '版权方客户管理', icon: 'tree' },
         hidden: true
+      },
+      {
+        path: '/owner/updateCustomer',
+        name: 'UpdateCustomer',
+        component: () => import('@/views/introduction/owner/updateCustomer'),
+        meta: { title: '版权方客户管理', icon: 'tree' },
+        hidden: true
+      },
+      {
+        path: '/owner/createCustomer',
+        name: 'CreateCustomer',
+        component: () => import('@/views/introduction/owner/createCustomer'),
+        meta: { title: '版权方客户管理', icon: 'tree' },
+        hidden: true
       }
     ]
   },
