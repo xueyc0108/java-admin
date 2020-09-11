@@ -91,7 +91,11 @@
       </el-form-item>
       <el-form-item>
         <el-button :disabled="saveBtnDisabled" type="primary" @click="saveBook()">保存</el-button>
+        <router-link :to="'/cms/book/list'">
+          <el-button type="primary">取消</el-button>
+        </router-link>
       </el-form-item>
+
     </el-form>
   </div>
 </template>
